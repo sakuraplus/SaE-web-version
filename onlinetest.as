@@ -783,7 +783,7 @@
 		}
 		function LoadErrorHandler(e:Event)
 		{
-			SaeDebug.write("»>>"+LoadErrorHandler);
+			SaeDebug.write("»>>script file not found"+LoadErrorHandler);
 			showtrace("script file not found");
 		}
 
@@ -1872,6 +1872,9 @@
 			//变量赋值
 		function anEVAL(scenario:String )
 		{
+			var pattern:RegExp =/[|]/g;
+			scenario=scenario.replace(pattern, "");
+			trace("ANEVAL"+scenario);
 			var ArrT;
 			var operator:String;
 			if(scenario.indexOf("=")>0)
@@ -2126,18 +2129,15 @@
 				//如果包含临时变量
 				tlist+=tempevallist;
 			}
-			trace("rv-sevallist= "+sevallist);
-			trace("rv-evallist= "+evallist);
-			trace("rv-tlist= "+tlist);
-			sti = str.indexOf("@");
-			//edi = str.indexOf(" ",sti + 1);
-			trace("replaceVar  sti=  "+sti+"  edi= "+edi);
+
 			while (str.indexOf("@",sti) >= 0 && str.indexOf(" ",edi+1) > 0)
 			{
+				
 				//遍历 文字中包含的所有变量
-				sti = str.indexOf("@",edi);
-				edi = str.indexOf(" ",sti + 1);
+				sti = str.indexOf("@",sti+1);
+				edi = str.indexOf(" ",sti +1);
 				strT = str.substring((sti + 1),edi);
+				trace("sti/edi="+sti+"   "+edi+"="+strT);
 				sti++;
 				//strT=replaceprefix(strT);
 				
