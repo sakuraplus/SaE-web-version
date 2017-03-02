@@ -215,6 +215,14 @@
 			}else{
 				Shobjsave.data.savedValue =ShXML;
 			}
+
+			if(XML(Shobjsave.data.savedValue).playingat.children().length()>0)
+			{
+				btnSystem.btnLoad.alpha=1;	
+			}else{
+				btnSystem.btnLoad.alpha=0.5;
+			}
+
 				sevallist = ShXML.staticVar;
 				cgXML=XML("<cg>"+ShXML.cgpanel+"</cg>");
 				trace("----sevallist="+sevallist);
@@ -232,6 +240,31 @@
 
 	 private function saveValue(event:MouseEvent):void 
 	 {
+		//存档
+		stopTimerSkip();
+			
+		if (readScenario == firstScenario || !saveable||inscript)
+		{
+			showtrace("you cannot save here");
+			return;
+		}
+		if (! btnwaiting)
+		{
+			btnwaiting = true;
+			waittimerBtn.start();
+		}
+		else
+		{
+			return;
+		}
+		btnSOUND();
+		MCsaving.play();
+			//Save(StrSave);
+		TweenLite.to(btnSystem,durtime,{x:parseInt(initXML.Sui.imgsystem. @ x1)});
+		btnSystem.btnLoad.alpha=1;
+		
+
+
 		trace("saving value..");
 		output.appendText("saving value...\n");
 		playingat.readline = ti;
@@ -287,11 +320,11 @@
 	{
 		trace("showValue xml");
 //		trace( ShXML);
-//		output.text=Shobjsave.data.savedValue.toString();          
+		output.text=Shobjsave.data.savedValue.toString();          
 		//ShXML = XML(Shobjsave.data.savedValue.toString());
 		
 		trace("showValue share");
-//		trace(Shobjsave.data.savedValue.toString());
+		trace(Shobjsave.data.savedValue.toString());
         }
 
 	private function onFlushStatus(event:NetStatusEvent):void
@@ -691,7 +724,8 @@
 			 output.appendText("\nload-btnSkipLoader"+new Date().milliseconds);
 
 			btnSystem.btnsys.addEventListener(MouseEvent.CLICK,clickShowsys);
-			btnSystem.btnSave.addEventListener(MouseEvent.CLICK,clickSave);
+			btnSystem.btnSave.addEventListener(MouseEvent.CLICK,saveValue);
+			//btnSystem.btnSave.addEventListener(MouseEvent.CLICK,clickSave);
 			btnSystem.btnLoad.addEventListener(MouseEvent.CLICK,clickLoad);
 			btnSystem.btnBack.addEventListener(MouseEvent.CLICK,clickBack);
 			btnSystem.btnReplay.addEventListener(MouseEvent.CLICK,clickReplay);
@@ -2360,7 +2394,9 @@
 					///////////call;
 					return;
 				case "clickLoad" :
+
 					trace("clickLoad");
+					
 					Load(StrAutosave);
 					return;
 				case "keyback" :
@@ -2501,6 +2537,10 @@
 		function clickLoad(event:MouseEvent):void
 		{
 			//读取设定的存档文件
+			if(btnSystem.btnLoad.alpha<0.9)
+			{
+				return;
+			}
 			stopTimerSkip();
 
 			if (! btnwaiting)
@@ -2519,12 +2559,13 @@
 		}
 		function Load(str:String)
 		{
-
+			
 			loadtxt = false;
 		
 			loadXML = new XML  ;
 			loadXML =XML(Shobjsave.data.savedValue.toString()); 
 			trace("读取存档2"+Shobjsave.data.savedValue);
+			SaeDebug.write("读取存档"+loadXML.playingat);
 
 			//////////变量;
 			var i=0;
@@ -2538,16 +2579,22 @@
 			trace("//////load/2////"+evallist);
 			//evallist = loadXML.svar;
 			//////////变量
-
+			if(loadXML.playingat.children().length()<1)
+			{
+				showtrace("shobj load error, you have not save correctly");
+				loadtxt = true;
+				return;
+			}
+			stageInit();//清除按钮临时变量，清除等待状态
 			/////////call;
-			loadtxt = false;
+			
 			readScenario = loadXML.playingat.scenario;
 			trace("//////load/3////"+readScenario);
 			ti = loadXML.playingat.readline;
 			trace("//////load/4////"+ti);
 			lastti =loadXML.playingat.lastreadline;
 			lastScenario = loadXML.playingat.lastScenario;
-			ti++;
+			//ti++;
 			bgurl = loadXML.playingat.bg;
 
 			if (bgurl != "")
